@@ -1,0 +1,51 @@
+rules:
+  - id: hardcoded-password
+    patterns:
+      - pattern: |
+          password = "..."
+      - pattern: |
+          const password = "..."
+      - pattern: |
+          let password = "..."
+    message: Hardcoded password detected
+    languages: [typescript, javascript]
+    severity: ERROR
+
+  - id: sql-injection
+    patterns:
+      - pattern: |
+          query($X + $Y)
+      - pattern: |
+          $QUERY.query($X + $Y)
+    message: Potential SQL injection vulnerability
+    languages: [typescript, javascript]
+    severity: WARNING
+
+  - id: no-console-log
+    patterns:
+      - pattern: console.log(...)
+      - pattern: console.error(...)
+      - pattern: console.warn(...)
+    message: Console logging detected - consider using proper logging
+    languages: [typescript, javascript]
+    severity: INFO
+
+  - id: missing-input-validation
+    patterns:
+      - pattern: |
+          @Post()
+          $METHOD(@Body() $PARAM: any) { ... }
+      - pattern: |
+          @Put()
+          $METHOD(@Body() $PARAM: any) { ... }
+    message: Endpoint accepts 'any' type - consider proper input validation
+    languages: [typescript]
+    severity: WARNING
+
+  - id: weak-crypto
+    patterns:
+      - pattern: crypto.createHash('md5')
+      - pattern: crypto.createHash('sha1')
+    message: Weak cryptographic hash function detected
+    languages: [typescript, javascript]
+    severity: ERROR
