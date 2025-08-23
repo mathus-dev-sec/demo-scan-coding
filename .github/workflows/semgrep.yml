@@ -1,75 +1,26 @@
-name: Semgrep Security Scan
-
 on:
+  workflow_dispatch: {}
+  pull_request: {}
   push:
-    branches: [main, develop]
-  pull_request:
-    branches: [main]
-
+    branches:
+    - main
+    - master
+    paths:
+    - .github/workflows/semgrep.yml
+  schedule:
+  # random HH:MM to avoid a load spike on GitHub Actions at 00:00
+  - cron: 32 4 * * *
+name: Semgrep
 jobs:
   semgrep:
-    name: Semgrep Scan
+    name: semgrep/ci
     runs-on: ubuntu-latest
-
+    permissions:
+      contents: read
+    env:
+      SEMGREP_APP_TOKEN: ${{ secrets.SEMGREP_APP_TOKEN }}
     container:
-      image: returntocorp/semgrep
-
+      image: semgrep/semgrep
     steps:
-      - uses: actions/checkout@v4
-
-      - name: Run Semgrep
-        run: |
-          semgrep \
-            --config=auto \
-            --sarif \
-            --output=semgrep.sarif \
-            src/
-        env:
-          SEMGREP_APP_TOKEN: ${{ secrets.SEMGREP_APP_TOKEN }}
-
-      - name: Upload SARIF file
-        uses: github/codeql-action/upload-sarif@v3
-        with:
-          sarif_file: semgrep.sarif
-        if: always()
-
-  build-and-test:
-    name: Build and Test
-    runs-on: ubuntu-latest
-
-    strategy:
-      matrix:
-        node-version: [18.x, 20.x]
-
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v4
-        with:
-          node-version: ${{ matrix.node-version }}
-          cache: "npm"
-
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Run linter
-        run: npm run lint
-
-      - name: Run tests
-        run: npm run test:cov
-
-      - name: Build application
-        run: npm run build
-
-      - name: Run Semgrep locally
-        run: |
-          npm install -g semgrep
-          npm run semgrep
-        continue-on-error: true
-
-      - name: Upload test coverage
-        uses: actions/upload-artifact@v4
-        with:
-          name: coverage-report-${{ matrix.node-version }}
-          path: coverage/
+    - uses: actions/checkout@v4
+    - run: semgrep ci
