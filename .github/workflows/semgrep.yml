@@ -1,38 +1,65 @@
-name: Semgrep Security Scan
+# name: Semgrep Security Scan
+
+# on:
+#   push:
+#     branches: [main, develop]
+#   pull_request:
+#     branches: [main]
+
+# jobs:
+#   semgrep:
+#     name: Semgrep Scan
+#     runs-on: ubuntu-latest
+
+#     steps:
+#       - uses: actions/checkout@v4
+
+#       # Install Semgrep
+#       - name: Install Semgrep
+#         run: |
+#           pip install semgrep
+
+#       # Run Semgrep (connect to Dashboard)
+#       - name: Run Semgrep
+#         run: |
+#           semgrep \
+#             --config=auto \
+#             --sarif \
+#             --output=semgrep.sarif \
+#             src/
+#         env:
+#           SEMGREP_APP_TOKEN: ${{ secrets.SEMGREP_APP_TOKEN }}
+
+#       # Upload SARIF to GitHub Code Scanning
+#       - name: Upload SARIF file
+#         uses: github/codeql-action/upload-sarif@v3
+#         with:
+#           sarif_file: semgrep.sarif
+#         if: always()
+
+name: Semgrep Scan
 
 on:
   push:
-    branches: [main, develop]
+    branches: [develop]
   pull_request:
-    branches: [main]
+    branches: [develop]
 
 jobs:
   semgrep:
-    name: Semgrep Scan
     runs-on: ubuntu-latest
-
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-      # Install Semgrep
-      - name: Install Semgrep
-        run: |
-          pip install semgrep
-
-      # Run Semgrep (connect to Dashboard)
       - name: Run Semgrep
-        run: |
-          semgrep \
-            --config=auto \
-            --sarif \
-            --output=semgrep.sarif \
-            src/
-        env:
-          SEMGREP_APP_TOKEN: ${{ secrets.SEMGREP_APP_TOKEN }}
-
-      # Upload SARIF to GitHub Code Scanning
-      - name: Upload SARIF file
-        uses: github/codeql-action/upload-sarif@v3
+        uses: returntocorp/semgrep-action@v1
         with:
-          sarif_file: semgrep.sarif
-        if: always()
+          config: p/ci
+          generateSarif: true
+          uploadSarif: true
+        env:
+          # ใช้ secrets context
+          SEMGREP_APP_TOKEN: ${{ secrets.SEMGREP_APP_TOKEN }}
+          # ใช้ github context เพื่อ log branch ที่สแกน
+          GITHUB_BRANCH: ${{ github.ref }}
