@@ -1,5 +1,6 @@
 import { Controller, Get, Query, Redirect } from "@nestjs/common";
 import { AppService } from "./app.service";
+import * as dotT from "dot";
 
 @Controller()
 export class AppController {
@@ -75,5 +76,19 @@ export class AppController {
   @Redirect("https://docs.nestjs.com", 302)
   getDocs2(@Query("input") userInput) {
     return { url: "https://docs.nestjs.com/v5/" };
+  }
+
+  @Get("/bar")
+  getData(@Query("text") text): string {
+    // deepruleid: dot-nestjs
+    const res = dotT.compile(text)();
+    return res;
+  }
+
+  @Get("/bar")
+  getOkData(@Query("cmd") command): string {
+    // ok: dot-nestjs
+    const res = dotT.compile("<html>text</html>")();
+    return res;
   }
 }
