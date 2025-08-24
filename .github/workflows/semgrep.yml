@@ -1,47 +1,73 @@
-name: Semgrep ISO Security Scan
-
 on:
+  workflow_dispatch: {}
+  pull_request: {}
   push:
-    branches: [main, develop]
-  pull_request:
-    branches: [main, develop]
-
+    branches:
+      - main
+      - master
+    paths:
+      - .github/workflows/semgrep.yml
+  schedule:
+    # random HH:MM to avoid a load spike on GitHub Actions at 00:00
+    - cron: 32 4 * * *
+name: Semgrep
 jobs:
   semgrep:
+    name: semgrep/ci
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    env:
+      SEMGREP_APP_TOKEN: ${{ secrets.SEMGREP_APP_TOKEN }}
+    container:
+      image: semgrep/semgrep
     steps:
-      # 1️⃣ เช็คเอา repository
       - uses: actions/checkout@v4
+      - run: semgrep ci
+#       name: Semgrep ISO Security Scan
 
-      # 2️⃣ ตั้งค่า Node.js สำหรับ NestJS
-      - name: Set up Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: "18"
+# on:
+#   push:
+#     branches: [main, develop]
+#   pull_request:
+#     branches: [main, develop]
 
-      # 3️⃣ ติดตั้ง dependencies ของโปรเจกต์
-      - name: Install dependencies
-        run: npm install
+# jobs:
+#   semgrep:
+#     runs-on: ubuntu-latest
+#     steps:
+#       # 1️⃣ เช็คเอา repository
+#       - uses: actions/checkout@v4
 
-      # 4️⃣ ติดตั้ง Python และ Semgrep
-      - name: Set up Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: "3.x"
+#       # 2️⃣ ตั้งค่า Node.js สำหรับ NestJS
+#       - name: Set up Node.js
+#         uses: actions/setup-node@v3
+#         with:
+#           node-version: "18"
 
-      - name: Install Semgrep
-        run: pip install semgrep
+#       # 3️⃣ ติดตั้ง dependencies ของโปรเจกต์
+#       - name: Install dependencies
+#         run: npm install
 
-      # 5️⃣ รัน Semgrep scan พร้อม export SARIF
-      - name: Run Semgrep ISO Scan
-        run: |
-          semgrep --config ./iso-security.yaml \
-                  --sarif --output $GITHUB_WORKSPACE/semgrep-results.sarif ./src
-        env:
-          SEMGREP_APP_TOKEN: ${{ secrets.SEMGREP_APP_TOKEN }}
+#       # 4️⃣ ติดตั้ง Python และ Semgrep
+#       - name: Set up Python
+#         uses: actions/setup-python@v4
+#         with:
+#           python-version: "3.x"
 
-      # 6️⃣ อัปโหลด SARIF ไปยัง GitHub Security Dashboard
-      - name: Upload SARIF to GitHub
-        uses: github/codeql-action/upload-sarif@v2
-        with:
-          sarif_file: $GITHUB_WORKSPACE/semgrep-results.sarif
+#       - name: Install Semgrep
+#         run: pip install semgrep
+
+#       # 5️⃣ รัน Semgrep scan พร้อม export SARIF
+#       - name: Run Semgrep ISO Scan
+#         run: |
+#           semgrep --config ./iso-security.yaml \
+#                   --sarif --output $GITHUB_WORKSPACE/semgrep-results.sarif ./src
+#         env:
+#           SEMGREP_APP_TOKEN: ${{ secrets.SEMGREP_APP_TOKEN }}
+
+#       # 6️⃣ อัปโหลด SARIF ไปยัง GitHub Security Dashboard
+#       - name: Upload SARIF to GitHub
+#         uses: github/codeql-action/upload-sarif@v2
+#         with:
+#           sarif_file: $GITHUB_WORKSPACE/semgrep-results.sarif
