@@ -1,35 +1,35 @@
-rules:
-  # 1️⃣ ป้องกัน eval / code injection
-  - id: no-eval
-    pattern: eval(...)
-    message: "Avoid using eval(), it can lead to code injection"
-    languages: [javascript, typescript]
-    severity: ERROR
+# rules:
+#   # 1️⃣ ป้องกัน eval / code injection
+#   - id: no-eval
+#     pattern: eval(...)
+#     message: "Avoid using eval(), it can lead to code injection"
+#     languages: [javascript, typescript]
+#     severity: ERROR
 
-  # 2️⃣ ตรวจสอบ hardcoded passwords / secrets
-  - id: hardcoded-password
-    pattern: "$VAR = '$SECRET'"
-    message: "Hardcoded secrets are not allowed"
-    languages: [javascript, typescript]
-    severity: ERROR
+#   # 2️⃣ ตรวจสอบ hardcoded passwords / secrets
+#   - id: hardcoded-password
+#     pattern: "$VAR = '$SECRET'"
+#     message: "Hardcoded secrets are not allowed"
+#     languages: [javascript, typescript]
+#     severity: ERROR
 
-  # 3️⃣ ป้องกัน log sensitive data
-  - id: log-sensitive
-    pattern: "console.log($SECRET)"
-    message: "Do not log sensitive information"
-    languages: [javascript, typescript]
-    severity: WARNING
+#   # 3️⃣ ป้องกัน log sensitive data
+#   - id: log-sensitive
+#     pattern: "console.log($SECRET)"
+#     message: "Do not log sensitive information"
+#     languages: [javascript, typescript]
+#     severity: WARNING
 
-  # 4️⃣ ตรวจสอบ route / API ไม่มี guard (NestJS specific)
-  - id: missing-auth-guard
-    pattern: "@Controller $CONTROLLER\n  $METHOD"
-    message: "Consider adding @UseGuards(AuthGuard) to secure this controller method"
-    languages: [typescript]
-    severity: WARNING
+#   # 4️⃣ ตรวจสอบ route / API ไม่มี guard (NestJS specific)
+#   - id: missing-auth-guard
+#     pattern: "@Controller $CONTROLLER\n  $METHOD"
+#     message: "Consider adding @UseGuards(AuthGuard) to secure this controller method"
+#     languages: [typescript]
+#     severity: WARNING
 
-  # 5️⃣ ตรวจสอบ use of eval-like functions (Function constructor)
-  - id: function-constructor
-    pattern: "new Function(...)"
-    message: "Avoid using Function constructor, may lead to code injection"
-    languages: [javascript, typescript]
-    severity: ERROR
+#   # 5️⃣ ตรวจสอบ use of eval-like functions (Function constructor)
+#   - id: function-constructor
+#     pattern: "new Function(...)"
+#     message: "Avoid using Function constructor, may lead to code injection"
+#     languages: [javascript, typescript]
+#     severity: ERROR
