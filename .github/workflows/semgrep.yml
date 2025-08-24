@@ -51,21 +51,25 @@ jobs:
       # 1️⃣ Checkout code
       - uses: actions/checkout@v4
 
-      # 2️⃣ Run Semgrep scan and publish to Dashboard
-      - name: Run Semgrep
-        uses: returntocorp/semgrep-action@v1
-        with:
-          config: p/ci
-          args: >
-            --publish
-            --branch ${{ github.ref_name }}
-          publishToken: ${{ secrets.SEMGREP_APP_TOKEN }}
+      # 2️⃣ ติดตั้ง Semgrep CLI
+      - name: Install Semgrep
+        run: pip install semgrep
 
-      # 3️⃣ Optional: generate SARIF file locally
+      # 3️⃣ Run Semgrep scan และ publish ขึ้น Dashboard
+      - name: Run Semgrep
+        env:
+          SEMGREP_APP_TOKEN: ${{ secrets.SEMGREP_APP_TOKEN }}
+        run: |
+          semgrep --config p/ci \
+                  --publish \
+                  --branch ${{ github.ref_name }} \
+                  --token $SEMGREP_APP_TOKEN
+
+      # 4️⃣ Generate SARIF artifact (optional)
       - name: Generate SARIF
         run: semgrep --config p/ci --sarif --output semgrep.sarif
 
-      # 4️⃣ Upload SARIF artifact
+      # 5️⃣ Upload SARIF artifact
       - uses: actions/upload-artifact@v4
         with:
           name: semgrep-sarif
