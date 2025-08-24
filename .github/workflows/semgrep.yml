@@ -10,8 +10,20 @@ jobs:
   semgrep:
     runs-on: ubuntu-latest
     steps:
+      # 1️⃣ เช็คเอา repository
       - uses: actions/checkout@v4
 
+      # 2️⃣ ตั้งค่า Node.js สำหรับ NestJS
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: "18"
+
+      # 3️⃣ ติดตั้ง dependencies ของโปรเจกต์
+      - name: Install dependencies
+        run: npm install
+
+      # 4️⃣ ติดตั้ง Python และ Semgrep
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
@@ -20,9 +32,16 @@ jobs:
       - name: Install Semgrep
         run: pip install semgrep
 
-      - name: Run Semgrep
+      # 5️⃣ รัน Semgrep scan พร้อม export SARIF
+      - name: Run Semgrep ISO Scan
         run: |
           semgrep --config ./iso-security.yaml \
                   --sarif --output $GITHUB_WORKSPACE/semgrep-results.sarif ./src
         env:
           SEMGREP_APP_TOKEN: ${{ secrets.SEMGREP_APP_TOKEN }}
+
+      # 6️⃣ อัปโหลด SARIF ไปยัง GitHub Security Dashboard
+      - name: Upload SARIF to GitHub
+        uses: github/codeql-action/upload-sarif@v2
+        with:
+          sarif_file: $GITHUB_WORKSPACE/semgrep-results.sarif
