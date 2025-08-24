@@ -57,6 +57,7 @@ export class AppController {
     // ✔ ไม่ใช่ critical เพราะเราทำ sanitize แบบ basic
     if (/[^0-9+\-*/(). ]/.test(expr)) {
       throw new Error("Invalid characters");
+      //tset
     }
     return eval(expr); // high, เพราะยังเสี่ยง
   }
