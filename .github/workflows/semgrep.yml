@@ -36,7 +36,6 @@
 #         with:
 #           sarif_file: semgrep.sarif
 #         if: always()
-
 name: Semgrep Scan
 
 on:
@@ -58,6 +57,12 @@ jobs:
           config: p/ci
           generateSarif: true
           uploadSarif: true
-          branch: develop
+          branch: ${{ github.ref_name }} # ส่ง branch name จริง
         env:
           SEMGREP_APP_TOKEN: ${{ secrets.SEMGREP_APP_TOKEN }}
+
+      - name: Upload SARIF artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: semgrep-sarif
+          path: semgrep.sarif
