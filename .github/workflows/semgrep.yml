@@ -50,14 +50,8 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Install Semgrep
-        run: pip install semgrep
-
-      - name: Run Semgrep Scan
-        env:
-          SEMGREP_APP_TOKEN: ${{ secrets.SEMGREP_APP_TOKEN }}
-        run: |
-          semgrep --config p/ci \
-                  --publish \
-                  --branch ${{ github.ref_name }} \
-                  --token $SEMGREP_APP_TOKEN
+      - name: Run Semgrep Action
+        uses: returntocorp/semgrep-action@v1
+        with:
+          config: p/ci
+          publishToken: ${{ secrets.SEMGREP_APP_TOKEN }}
