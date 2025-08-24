@@ -54,5 +54,7 @@ jobs:
         uses: returntocorp/semgrep-action@v1
         with:
           config: p/ci
-          args: "--publish --branch ${{ github.ref_name }}"
+          publish: true # ส่งผลขึ้น Semgrep Dashboard
+          branch: ${{ github.ref_name }} # branch ที่ต้องการ show ใน dashboard
+        env:
           publishToken: ${{ secrets.SEMGREP_APP_TOKEN }}
