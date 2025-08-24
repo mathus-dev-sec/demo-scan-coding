@@ -1,28 +1,20 @@
-name: Semgrep Scan
+name: Semgrep ISO Scan
 
 on:
   push:
-    branches: [main]
+    branches: [develop]
   pull_request:
-    branches: [main]
+    branches: [develop]
 
 jobs:
   semgrep:
     runs-on: ubuntu-latest
     steps:
-      # 1️⃣ Checkout code
       - uses: actions/checkout@v4
 
-      # 2️⃣ ติดตั้ง Semgrep CLI
       - name: Install Semgrep
-        run: pip install semgrep
+        run: pip3 install semgrep
 
-      # 3️⃣ Run Semgrep scan และ generate SARIF
-      - name: Run Semgrep Scan
-        run: semgrep --config p/ci --sarif --output semgrep.sarif
-
-      # 4️⃣ Upload SARIF artifact
-      - uses: actions/upload-artifact@v4
-        with:
-          name: semgrep-sarif
-          path: semgrep.sarif
+      - name: Run Semgrep ISO Scan
+        run: |
+          semgrep --config ./iso-security.yaml --sarif --output semgrep-results.sarif ./src

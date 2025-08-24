@@ -1,0 +1,28 @@
+rules:
+  - id: no-hardcoded-secrets
+    patterns:
+      - pattern: "const $VAR = '$SECRET'"
+    message: "Avoid hardcoded secrets. ISO 27001 recommends secure secret management."
+    severity: CRITICAL
+    languages: [javascript, typescript]
+
+  - id: unsafe-eval
+    patterns:
+      - pattern: "eval($EXPR)"
+    message: "Do not use eval(). Violates secure coding practices (ISO 27002)."
+    severity: HIGH
+    languages: [javascript, typescript]
+
+  - id: missing-input-validation
+    patterns:
+      - pattern: "$VAR = req.body.$FIELD"
+    message: "Validate input before use. ISO recommends input validation to prevent injection attacks."
+    severity: HIGH
+    languages: [javascript, typescript]
+
+  - id: logging-sensitive-data
+    patterns:
+      - pattern: "console.log($SECRET)"
+    message: "Do not log sensitive data. ISO 27001 requires proper handling of sensitive info."
+    severity: HIGH
+    languages: [javascript, typescript]
