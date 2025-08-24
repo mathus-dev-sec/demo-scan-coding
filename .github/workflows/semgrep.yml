@@ -1,10 +1,10 @@
-name: Semgrep ISO Scan
+name: Semgrep ISO Security Scan
 
 on:
   push:
-    branches: [main]
+    branches: [main, develop]
   pull_request:
-    branches: [main]
+    branches: [main, develop]
 
 jobs:
   semgrep:
@@ -12,9 +12,17 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Install Semgrep
-        run: pip3 install semgrep
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: "18"
 
-      - name: Run Semgrep ISO Scan
+      - name: Install dependencies
+        run: npm install
+
+      - name: Run Semgrep
         run: |
-          semgrep --config ./iso-security.yaml --sarif --output semgrep-results.sarif ./src
+          semgrep --config ./iso-security.yaml \
+                  --sarif --output $GITHUB_WORKSPACE/semgrep-results.sarif ./src
+        env:
+          SEMGREP_APP_TOKEN: ${{ secrets.SEMGREP_APP_TOKEN }}
