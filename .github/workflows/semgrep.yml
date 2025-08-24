@@ -48,10 +48,19 @@ jobs:
   semgrep:
     runs-on: ubuntu-latest
     steps:
+      # 1️⃣ Checkout code
       - uses: actions/checkout@v4
 
-      - name: Run Semgrep Action
-        uses: returntocorp/semgrep-action@v1
+      # 2️⃣ ติดตั้ง Semgrep CLI
+      - name: Install Semgrep
+        run: pip install semgrep
+
+      # 3️⃣ Run Semgrep scan และ generate SARIF
+      - name: Run Semgrep Scan
+        run: semgrep --config p/ci --sarif --output semgrep.sarif
+
+      # 4️⃣ Upload SARIF artifact
+      - uses: actions/upload-artifact@v4
         with:
-          config: p/ci
-          publishToken: ${{ secrets.SEMGREP_APP_TOKEN }}
+          name: semgrep-sarif
+          path: semgrep.sarif
